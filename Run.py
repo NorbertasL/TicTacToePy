@@ -1,8 +1,45 @@
-# Main Game Class
+class ScoreTracker:
+    # Scoring class
+    # Positive score is X, negative score is 0
+    # When a score of |3| a winner is announced
 
-grind = [[None, None, None],
-         [None, None, None],
-         [None, None, None]]
+    grind = [[None, None, None],
+             [None, None, None],
+             [None, None, None]]
+
+    def __init__(self):
+        self.row = [0, 0, 0]
+        self.col = [0, 0, 0]
+        self.diag = [0, 0]
+
+    def add_score(self, x, y, _player):
+        player_value = 1 if _player == 'X' else -1
+        self.row[x-1] += player_value
+        self.col[y-1] += player_value
+        if x in (1, 3):
+            if y == x:
+                self.diag[0] += player_value
+            elif y in (1, 3):
+                self.diag[1] += player_value
+
+        if x == 2 and y == 2:
+            self.diag[0] += player_value
+            self.diag[1] += player_value
+
+        for r in self.row:
+            if abs(r) == 3:
+                return "X" if r == 3 else "O"
+        for c in self.col:
+            if abs(c) == 3:
+                return "X" if c == 3 else "O"
+        for d in self.diag:
+            if abs(d) == 3:
+                return "X" if d == 3 else "O"
+        return None
+
+
+# Main Game Class
+score_tracker = ScoreTracker()
 
 
 def print_grid(grid):
@@ -37,7 +74,7 @@ for i in range(1, 9):
     # Odd turn is X, even is O
     player = 'O' if i % 2 == 0 else 'X'
     print(player, " turn")
-    print_grid(grind)
+    print_grid(score_tracker.grind)
     validInput = False
     while not validInput:
         try:
@@ -46,7 +83,7 @@ for i in range(1, 9):
                 raise ValueError
             if not 0 < user_input[0] < 4 or not 0 < user_input[1] < 4:
                 raise ValueError
-            if grind[user_input[0]-1][user_input[1]-1] is not None:
+            if score_tracker.grind[user_input[0] - 1][user_input[1] - 1] is not None:
                 print("Grid space occupied, please try again")
                 continue
         except ValueError as e:
@@ -55,6 +92,12 @@ for i in range(1, 9):
             print("Example: 2 3")
             continue
         validInput = True
-    grind[user_input[0]-1][user_input[1]-1] = player
+    score_tracker.grind[user_input[0] - 1][user_input[1] - 1] = player
 
-    print(user_input)
+    print(player, " has picked: ", user_input, "\n")
+
+    winner = score_tracker.add_score(user_input[0], user_input[1], player)
+    if winner is not None:
+        print_grid(score_tracker.grind)
+        print("The winner is player ", winner, "!!!!!")
+        break
