@@ -35,7 +35,8 @@ if input("For rules press H, to start the game press any other key: ").lower() =
 # Max turns a game can have is 9
 for i in range(1, 9):
     # Odd turn is X, even is O
-    print("O turn") if i % 2 == 0 else print("X turn")
+    player = 'O' if i % 2 == 0 else 'X'
+    print(player, " turn")
     print_grid(grind)
     validInput = False
     while not validInput:
@@ -45,11 +46,15 @@ for i in range(1, 9):
                 raise ValueError
             if not 0 < user_input[0] < 4 or not 0 < user_input[1] < 4:
                 raise ValueError
+            if grind[user_input[0]-1][user_input[1]-1] is not None:
+                print("Grid space occupied, please try again")
+                continue
         except ValueError as e:
             print("Bad Value please try again, you can only use values 1-3 inclusive")
             print("Used x y format for the coordinate separated by space")
             print("Example: 2 3")
             continue
-        break
+        validInput = True
+    grind[user_input[0]-1][user_input[1]-1] = player
 
     print(user_input)
